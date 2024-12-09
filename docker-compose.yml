@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  target:
+    build:
+      context: ./Victim
+      dockerfile: Dockerfile
+    container_name: target
+    networks:
+      spoof_net:
+        ipv4_address: 172.20.0.100
+
+  attacker:
+    build:
+      context: ./Attacker
+      dockerfile: Dockerfile
+    container_name: attacker
+    networks:
+      spoof_net:
+        ipv4_address: 172.20.0.10
+    volumes:
+      - ./Inquisitor:/app
+    privileged: true
+
+  ftp_server:
+    image: stilliard/pure-ftpd
+    container_name: ftp_server
+    networks:
+      spoof_net:
+        ipv4_address: 172.20.0.200
+    environment:
+      - PUBLICHOST=ftp_server
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    volumes:
+      - ./ftp_data:/home/ftpusers
+      - ./Ftp:/etc/pure-ftpd  # Mount the entrypoint script
+    entrypoint: /etc/pure-ftpd/entrypoint.sh
+networks:
+  spoof_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
