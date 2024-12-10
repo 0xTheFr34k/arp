@@ -16,18 +16,14 @@ import (
 )
 
 func getMACAddress(ifaceName string) (string, error) {
-	// Get the network interface by name
 	iface, err := net.InterfaceByName(ifaceName)
 	if err != nil {
 		return "", err
 	}
-
-	// Return the MAC address
 	return iface.HardwareAddr.String(), nil
 }
 
 func arp_spoof(target_ip string, target_mac string, impersonate_ip string, impersonate_mac string, interface_ string) {
-	// Define the network interface to use
 	iface := interface_
 
 	// Open the network interface for packet capture
@@ -44,7 +40,7 @@ func arp_spoof(target_ip string, target_mac string, impersonate_ip string, imper
 	// Define the IP and MAC addresses to impersonate
 	impersonateIP := net.ParseIP(impersonate_ip)
 	impersonateMAC, _ := net.ParseMAC(impersonate_mac)
-	// log.Printf("Spoofing %s (%s) to believe we are %s (%s) on interface %s", target_ip, target_mac, impersonate_ip, impersonate_mac, iface)
+
 	// Create an Ethernet layer
 	eth := layers.Ethernet{
 		SrcMAC:       impersonateMAC,
